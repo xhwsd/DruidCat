@@ -1,0 +1,9 @@
+## Interface: 11200
+## Title: DaruidCat 猫德
+## Title-zhCN: |CFF33AAFF[德鲁伊]|R猫德辅助插件
+## Notes-zhCN: 适配乌龟服的猫德辅助插件
+## Author: xhwsd@qq.com
+## Version: 1.1.1
+## Dependencies: !Libs
+
+DaruidCat.lua
