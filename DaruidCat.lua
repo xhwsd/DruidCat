@@ -1,6 +1,8 @@
 -- 非德鲁伊退出运行
 local _, playerClass = UnitClass("player")
-if playerClass ~= "DRUID" then return end
+if playerClass ~= "DRUID" then
+	return
+end
 
 -- 定义插件
 DaruidCat = AceLibrary("AceAddon-2.0"):new(
@@ -12,48 +14,6 @@ DaruidCat = AceLibrary("AceAddon-2.0"):new(
 
 -- 标签
 local DaruidCatTooltip = CreateFrame("GameTooltip", "DaruidCatTooltip", nil, "GameTooltipTemplate")
-
--- 取一个数字 1-3
--- 第 1 级：每个用户都应收到的关键信息
--- 第 2 级：用于本地调试（函数调用等）
--- 第 3 级：非常冗长的调试，将转储所有内容和信息
--- 如果设置为 "nil"，则不会收到任何调试信息
-
--- 调试常规
--- @param number level = 3 输出等级；可选值：1~3(从高到低)
--- @param string message 输出信息
--- @param array ... 格式化参数
-local function DebugGeneral(level, message, ...)
-	level = level or 3
-	DaruidCat:CustomLevelDebug(level, 0.75, 0.75, 0.75, nil, 0, message, unpack(arg))
-end
-
--- 调试信息
--- @param number level = 2 输出等级；可选值：1~3(从高到低)
--- @param string message 输出信息
--- @param array ... 格式化参数
-local function DebugInfo(level, message, ...)
-	level = level or 2
-	DaruidCat:CustomLevelDebug(level, 0.0, 1.0, 0.0, nil, 0, message, unpack(arg))
-end
-
--- 调试警告
--- @param number level = 2 输出等级；可选值：1~3(从高到低)
--- @param string message 输出信息
--- @param array ... 格式化参数
-local function DebugWarning(level, message, ...)
-	level = level or 2
-	DaruidCat:CustomLevelDebug(level, 1.0, 1.0, 0.0, nil, 0, message, unpack(arg))
-end
-
--- 调试错误
--- @param number level = 1 输出等级；可选值：1~3(从高到低)
--- @param string message 输出信息
--- @param array ... 格式化参数
-local function DebugError(level, message, ...)
-	level = level or 1
-	DaruidCat:CustomLevelDebug(level, 1.0, 0.0, 0.0, nil, 0, message, unpack(arg))
-end
 
 -- 位与数组
 -- @param table array 数组(索引表）
@@ -194,51 +154,45 @@ end
 
 -- 插件载入
 function DaruidCat:OnInitialize()
-	-- 自定义标题，以便调试输出
-	self.title = "MD"
+	-- 精简标题
+	self.title = "猫德辅助"
 	-- 开启调试
 	self:SetDebugging(true)
-	-- 输出1~2级调试
+	-- 调试等级
 	self:SetDebugLevel(2)
-
-	-- 注册命令
-	self:RegisterChatCommand({'/DaruidCat', "/MD"}, {
-		type = "group",
-		args = {
-			level = {
-				name = "level",
-				desc = "调试等级",
-				type = "toggle",
-				get = "GetDebugLevel",
-				set = "SetDebugLevel",
-			},
-			test = {
-				name = "test",
-				desc = "执行测试",
-				type = "execute",
-				func = function ()
-					print("[MD] 测试开始")
-					DaruidCat:Test()
-					print("[MD] 测试结束")
-				end
-			},
-		},
-	})
 end
 
 -- 插件打开
 function DaruidCat:OnEnable()
+	self:LevelDebug(3, "插件打开")
 
+	-- 注册命令
+	self:RegisterChatCommand({"/MDFZ", '/DaruidCat'}, {
+		type = "group",
+		args = {
+			tsms = {
+				name = "调试模式",
+				desc = "开启或关闭调试模式",
+				type = "toggle",
+				get = "IsDebugging",
+				set = "SetDebugging"
+			},
+			tsdj = {
+				name = "调试等级",
+				desc = "设置或获取调试等级",
+				type = "range",
+				min = 1,
+				max = 3,
+				get = "GetDebugLevel",
+				set = "SetDebugLevel"
+			}
+		},
+	})
 end
 
 -- 插件关闭
 function DaruidCat:OnDisable()
-
-end
-
--- 测试
-function DaruidCat:Test()
-
+	self:LevelDebug(3, "插件关闭")
 end
 
 -- 背刺
