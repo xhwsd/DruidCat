@@ -26,7 +26,7 @@
 /script DaruidCat:BackStab()
 ```
 
-逻辑描述：
+大致逻辑：
 - 潜行时使用毁灭
 - 非潜行时撕碎
 - 会对目标使用精灵之火
@@ -42,7 +42,7 @@
 /script DaruidCat:AccumulatePoint()
 ```
 
-逻辑描述：
+大致逻辑：
 - 会对目标使用精灵之火
 - 5连击时会执行终结
 
@@ -56,7 +56,7 @@
 /script DaruidCat:Termination()
 ```
 
-逻辑描述：
+大致逻辑：
 - 会根据目标类型抉择使用撕扯还是凶猛撕咬
 
 
