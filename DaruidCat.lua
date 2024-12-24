@@ -15,10 +15,10 @@ DaruidCat = AceLibrary("AceAddon-2.0"):new(
 -- 标签
 local DaruidCatTooltip = CreateFrame("GameTooltip", "DaruidCatTooltip", nil, "GameTooltipTemplate")
 
--- 位与数组
--- @param table array 数组(索引表）
--- @param string|number data 数据
--- @return number 成功返回索引，失败返回nil
+---位与数组
+---@param array table 数组(索引表）
+---@param data any 数据
+---@return integer|nil index 成功返回索引，失败返回空
 local function InArray(array, data)
 	if type(array) == "table" then
 		for index, value in ipairs(array) do
@@ -29,17 +29,17 @@ local function InArray(array, data)
 	end
 end
 
--- 自动攻击
+---自动攻击
 local function AutoAttack()
 	if not PlayerFrame.inCombat then
 		CastSpellByName("攻击")
 	end
 end
 
--- 取生命损失
--- @param string unit = "player" 单位
--- @return number 生命损失百分比
--- @return number 生命损失
+---取生命损失
+---@param unit? string 单位
+---@return integer percentage 生命损失百分比
+---@return integer lose 生命损失
 local function HealthLose(unit)
 	unit = unit or "player"
 
@@ -49,10 +49,10 @@ local function HealthLose(unit)
 	return math.floor(lose / max * 100), lose
 end
 
--- 取生命剩余
--- @param string unit = "player" 单位
--- @return number 生命剩余百分比
--- @return number 生命剩余
+---取生命剩余
+---@param unit? string 单位
+---@return integer percentage 生命剩余百分比
+---@return integer residual 生命剩余
 local function HealthResidual(unit)
 	unit = unit or "player"
 
@@ -61,11 +61,11 @@ local function HealthResidual(unit)
 	return math.floor(residual / UnitHealthMax(unit) * 100), residual
 end
 
--- 查询效果；查询单位指定效果是否存在
--- @param string buff 效果名称
--- @param string unit = "player" 目标单位；额外还支持`mainhand`、`offhand`
--- @return string|nil 效果类型；可选值：`mainhand`、`offhand`、`buff`、`debuff`
--- @return number 效果索引；从1开始
+---查询效果；查询单位指定效果是否存在
+---@param buff string 效果名称
+---@param unit? string 目标单位；额外还支持`mainhand`、`offhand`
+---@return string|nil kind 效果类型；可选值：`mainhand`、`offhand`、`buff`、`debuff`
+---@return number index 效果索引；从1开始
 local function FindBuff(buff, unit)
 	unit = unit or "player"
 	if not buff then return false end
@@ -115,9 +115,9 @@ local function FindBuff(buff, unit)
 	end
 end
 
--- 法术就绪；检验法术的冷却时间是否结束
--- @param string spell 法术名称
--- @return boolean 已就绪返回true，否则返回false
+---法术就绪；检验法术的冷却时间是否结束
+---@param spell string 法术名称
+---@return boolean ready 已就绪返回真，否则返回假
 local function SpellReady(spell)
 	if not spell then return false end
 
@@ -142,9 +142,9 @@ local function SpellReady(spell)
 	return false    
 end
 
--- 检验单位能否流血
--- @param string unit = "target" 单位名称
--- @return boolean 能流血返回true，否则返回false
+---检验单位能否流血
+---@param unit? string 单位名称
+---@return boolean can 能流血返回真，否则返回假
 local function CanBleed(unit)
 	unit = unit or "target"
 	local creature = UnitCreatureType(unit) or "其它"
@@ -152,7 +152,7 @@ local function CanBleed(unit)
 	return position ~= nil
 end
 
--- 插件载入
+---插件载入
 function DaruidCat:OnInitialize()
 	-- 精简标题
 	self.title = "猫德辅助"
@@ -162,7 +162,7 @@ function DaruidCat:OnInitialize()
 	self:SetDebugLevel(2)
 end
 
--- 插件打开
+---插件打开
 function DaruidCat:OnEnable()
 	self:LevelDebug(3, "插件打开")
 
@@ -190,12 +190,12 @@ function DaruidCat:OnEnable()
 	})
 end
 
--- 插件关闭
+---插件关闭
 function DaruidCat:OnDisable()
 	self:LevelDebug(3, "插件关闭")
 end
 
--- 背刺
+---背刺
 function DaruidCat:BackStab()
 	-- 潜行
 	if FindBuff("潜行") then
@@ -229,7 +229,7 @@ function DaruidCat:BackStab()
 	end
 end
 
--- 攒点
+---攒点
 function DaruidCat:AccumulatePoint()
 	-- 自动攻击
 	AutoAttack()
@@ -258,7 +258,7 @@ function DaruidCat:AccumulatePoint()
 	end
 end
 
--- 终结
+---终结
 function DaruidCat:Termination()
 	-- 自动攻击
 	AutoAttack()
