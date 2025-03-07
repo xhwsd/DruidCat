@@ -7,7 +7,7 @@
 ## 使用
 - 安装`!Libs`插件
 - [可选][[文档](https://github.com/xhwsd/SuperMacro/)][[下载](https://github.com/xhwsd/SuperMacro/archive/master.zip)]安装`SuperMacro`插件，安装后将获得更多宏位
-- [[文档](https://github.com/xhwsd/DruidCat/)][[下载](https://github.com/xhwsd/DruidBird/DruidCat/master.zip)]安装`DruidBird`插件
+- [[文档](https://github.com/xhwsd/DruidCat/)][[下载](https://github.com/xhwsd/DruidCat/master.zip)]安装`DruidBird`插件
 - 基于插件提供的函数，创建普通或超级宏
 - 将宏图标拖至动作条，然后使用宏
 
