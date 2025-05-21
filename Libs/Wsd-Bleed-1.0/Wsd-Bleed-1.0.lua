@@ -22,40 +22,87 @@ if not AceLibrary:IsNewVersion(MAJOR_VERSION, MINOR_VERSION) then
 	return
 end
 
--- 名称黑名单
-local BLACKLIST_NAMES = {
-	
+-- 白名单（元素生物、机械）
+local WHITELIST = {
+	-- 熔火之心
+    ["加尔"] = true,
+
+	-- 世界
+    ["灌木塑根者"] = true,
+    ["灌木露水收集者"] = true,
+    ["长瘤的灌木兽"] = true,
 }
 
--- 名称白名单
-local WHITELIST_NAMEE = {
-	["野兽"] = true,
-	["小动物"] = true,
-	["恶魔"] = true,
-	["龙类"] = true,
-	["巨人"] = true,
-	["人型生物"] = true,
-	["未指定"] = true
+-- 黑名单（非元素生物、机械）
+local BLACKLIST = {
+	-- 卡拉赞上层
+    ["恶魔之心"] = true,
+    ["战争使者监军"] = true,
+    ["兵卒"] = true,
+    ["共鸣水晶"] = true,
+    ["徘徊的魔法师"] = true,
+    ["徘徊的占星家"] = true,
+    ["徘徊的魔术师"] = true,
+    ["徘徊的工匠"] = true,
+    ["鬼灵训练师"] = true,
+    ["魔鳞魔网搜寻者"] = true,
+    ["影爪狼人"] = true,
+    ["影爪暗行者"] = true,
+    ["魔鳞织法者"] = true,
+
+	-- 卡拉赞下层
+    ["幻影守卫"] = true,
+    ["幽灵厨师"] = true,
+    ["闹鬼铁匠"] = true,
+    ["幻影仆从"] = true,
+    ["莫罗斯"] = true,
+
+	-- 纳克萨玛斯
+    ["邪恶之斧"] = true,
+    ["邪恶法杖"] = true,
+    ["邪恶之剑"] = true,
+    ["纳克萨玛斯之魂"] = true,
+    ["纳克萨玛斯之影"] = true,
+    ["憎恨吟唱者"] = true,
+
+	-- 斯坦索姆
+    ["安娜丝塔丽男爵夫人"] = true,
+    ["埃提耶什"] = true,
+
+	-- 其他
+    ["黑衣守卫斥候"] = true,
+    ["哀嚎的女妖"] = true,
+    ["尖叫的女妖"] = true,
+    ["无眼观察者"] = true,
+    ["黑暗法师"] = true,
+    ["幽灵训练师"] = true,
+    ["受难的上层精灵"] = true,
+    ["死亡歌手"] = true,
+    ["恐怖编织者"] = true,
+    ["哀嚎的死者"] = true,
+    ["亡鬼幻象"] = true,
+    ["恐惧骸骨"] = true,
+    ["骷髅刽子手"] = true,
+    ["骷髅剥皮者"] = true,
+    ["骷髅守护者"] = true,
+    ["骷髅巫师"] = true,
+    ["骷髅军官"] = true,
+    ["骷髅侍僧"] = true,
+    ["游荡的骷髅"] = true,
+    ["骷髅铁匠"] = true,
+    ["鬼魅随从"] = true,
+    ["艾德雷斯妖灵"] = true,
+    ["天灾勇士"] = true,
+    ["不安宁的阴影"] = true,
+    ["不死的看守者"] = true,
+    ["哀嚎的鬼怪"] = true,
+    ["被诅咒的灵魂"] = true,
+    ["不死的居民"] = true,
+    ["幽灵工人"] = true,
 }
 
--- 生物黑名单
-local BLACKLIST_CREATURES = {
-	
-}
-
--- 生物白名单
-local WHITELIST_CREATURE = {
-	["野兽"] = true,
-	["小动物"] = true,
-	["恶魔"] = true,
-	["龙类"] = true,
-	["巨人"] = true,
-	["人型生物"] = true,
-	["未指定"] = true
-}
-
--- 数组相关库。
----@class Wsd-Array-1.0
+-- 检验可否流血相关库。
+---@class Wsd-Bleed-1.0
 local Library = {}
 
 -- 库激活
@@ -93,30 +140,30 @@ end
 -- 检验单位能否流血
 ---@param unit? string 单位名称；缺省为`target`
 ---@return boolean can 能流血返回真，否则返回假
-function Library:Can(unit)
+function Library:CanBleed(unit)
 	unit = unit or "target"
-	local creature = UnitCreatureType(unit)
-	if not creature then
+    
+	local name = UnitName(unit)
+	if not name then
 		return false
+	else
+		-- 元素生物、机械先认定为不可流血
+		local type = UnitCreatureType(unit) or "其它"
+		if string.find("元素生物,机械", type) then
+			-- 位于白名单
+			return WHITELIST[name]
+		elseif BLACKLIST[name] then
+			-- 位于黑名单
+			return false
+		else
+			return true
+		end
 	end
-
-	-- 不可流血
-	if BLEED_BLACKLIST[creature] then
-		return false
-	end
-
-	-- 可以流血
-	if BLEED_WHITELIST[creature] then
-		return true
-	end
-	
-	-- 其他返回假，防止无限上流血而免疫
-	return false
 end
 
 --------------------------------
 
 -- 最终注册库
 AceLibrary:Register(Library, MAJOR_VERSION, MINOR_VERSION, activate, nil, external)
----@diagnostic disable-next-line: cast-local-type
+---@diagnostic disable-next-line
 Library = nil

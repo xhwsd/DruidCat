@@ -22,206 +22,21 @@ DruidCat = AceLibrary("AceAddon-2.0"):new(
 local Tablet = AceLibrary("Tablet-2.0")
 -- 法术状态
 local SpellStatus = AceLibrary("SpellStatus-1.0")
--- 德鲁伊法力库
-local DruidManaLib = AceLibrary("DruidManaLib-1.0")
+-- 移动
+local Movement = AceLibrary("SpecialEvents-Movement-2.0")
 
----@type Wsd-Array-1.0
-local Array = AceLibrary("Wsd-Array-1.0")
+---@type Wsd-Behind-1.0
+local Behind = AceLibrary("Wsd-Behind-1.0")
+---@type Wsd-Bleed-1.0
+local Bleed = AceLibrary("Wsd-Bleed-1.0")
+---@type Wsd-Buff-1.0
+local Buff = AceLibrary("Wsd-Buff-1.0")
 ---@type Wsd-Health-1.0
 local Health = AceLibrary("Wsd-Health-1.0")
 ---@type Wsd-Prompt-1.0
 local Prompt = AceLibrary("Wsd-Prompt-1.0")
----@type Wsd-Buff-1.0
-local Buff = AceLibrary("Wsd-Buff-1.0")
 ---@type Wsd-Spell-1.0
 local Spell = AceLibrary("Wsd-Spell-1.0")
-
--- 初始猛虎之怒时间
-local tigerFuryTimer = GetTime() - 18
--- 初始撕扯时间
-local ripTimer = GetTime() - 12
-
--- 取法力值
----@return integer currentMana 当前法力值
----@return integer maxMana 法力上限
-local function GetMana()
-	return DruidManaLib:GetMana()
-end
-
--- 项目链接到附魔标识
----@param link string 物品链接
----@return integer|nil id 附魔标识
-local function ItemLinkEnchantID(link)
-	if type(link) == "number" then
-		return link
-	elseif type(link) == "string" then
-		local _, _, id = string.find(link, "item:%d+:(%d+):%d+:%d+")
-		if id then
-			return tonumber(id)
-		end
-	end
-end
-
--- 取套装计数
----@param suit string 套装名称；可选值：`起源套甲`
----@param attach? integer 附加能量数；缺省为`0`
----@return integer count 套装计数
-local function GetSuitCount(suit, attach)
-	attach = attach or 0
-
-	-- 1.头盔 3.护肩 5.衣服 7.裤子 8.鞋子 18.圣物
-	local data = {
-		["起源套甲"] = {
-			["起源皮盔"] = 1,
-			["起源肩垫"] = 3,
-			["起源长袍"] = 5,
-			["起源短裤"] = 7,
-			["起源便靴"] = 8
-		}
-	}
-
-	local count = 0
-	if data[suit] then
-		for name, id in pairs(data[suit]) do
-			local link = GetInventoryItemLink("player", id)
-			if (ItemLinkToName(link) == name) then
-				count = count + 1
-			end
-		end
-	end
-	return count + attach
-end
-
--- 取圣物名称
----@return string name 圣物名称；无圣物返回空字符串
-local function GetRelicName()
-	-- 18为圣物的装备栏位标识
-	local link = GetInventoryItemLink("player", 18)
-	return link and ItemLinkToName(link) or ""
-end
-
--- 是否为猫形态
----@return boolean is 是否
-local function IsCat()
-	local _, _, active = GetShapeshiftFormInfo(3)
-	return active == 1
-end
-
--- 取当前形态
----@return integer|nil current 已变形返回形态索引，未变形返回`nil`
-local function GetCurrentForm()
-	-- 取当前形态
-	local current
-	for index = 1, 6 do
-		local _, _, active = GetShapeshiftFormInfo(index)
-		if active then
-			current = index
-			break
-		end
-	end
-	return current
-end
-
--- 切换形态；非指定形态取消，无形态转为形态
----@param index integer 形态索引；可选值：1.熊、2.豚、3.猫、4.鹿
----@return boolean success 成功返回真，否则返回假
-local function SwitchForm(index)
-	local current = GetCurrentForm()
-	if not current then
-		-- 转为指定形态
-		CastShapeshiftForm(index)
-		return true
-	elseif current ~= index then
-		-- 取消非指定形态
-		CastShapeshiftForm(current)
-		return true
-	end
-end
-
--- 取变形恢复能量数
----@param attach? integer 附加能量数；缺省为`0`
----@return integer energys 恢复能量数
-local function GetMetamorphicRecover(attach)
-	attach = attach or 0
-
-	-- 激怒天赋点数（0/5）
-	local _, _, _, _, points = GetTalentInfo(3, 2)
-	-- 每点天赋数恢复8点能量（40 = 5 x 8）
-	local energys = points * 8
-
-	-- 头盔装备槽标识为1，狼心附魔标识为3004
-	local link = GetInventoryItemLink("player", 1)
-	if link and ItemLinkEnchantID(link) == 3004 then
-		-- 变形恢复20点能量
-		energys = energys + 20
-	end
-	return energys + attach
-end
-
--- 取技能消耗能量数
----@param skill string 技能名称；可选值：`撕碎`、`爪击`、`扫击`
----@param attach? integer 附加能量数；缺省为`0`
----@return integer energys 消耗能量数
-local function GetSkillConsume(skill, attach)
-	attach = attach or 0
-	local energys = 0
-	if skill == "撕碎" then
-		energys = 60
-		-- 强化撕碎天赋点数（0/2）
-		local _, _, _, _, points = GetTalentInfo(2, 10)
-		-- 每点天赋减6点能量（12 = 2 x 6）
-		energys = energys - 6 * points
-	elseif skill == "爪击" then
-		energys = 45
-
-		-- 凶暴天赋点数（0/5）
-		local _, _, _, _, points = GetTalentInfo(2, 1)
-		-- 每点天赋减1点能量（共5点）
-		energys = energys - points
-
-		-- 起源套甲（3/5）
-		if GetSuitCount("起源套甲") >= 3 then
-			-- 减3点能量
-			energys = energys - 3
-		end
-		
-		-- 凶猛神像
-		if (GetRelicName() == "凶猛神像") then
-			-- 减3点能量
-			energys = energys - 3
-		end
-	elseif skill == "扫击" then
-		energys = 40
-
-		-- 凶暴天赋点数（0/5）
-		local _, _, _, _, points = GetTalentInfo(2, 1)
-		-- 每点天赋减1点能量（共5点）
-		energys = energys - points
-
-		-- 起源套甲（3/5）
-		if GetSuitCount("起源套甲") >= 3 then
-			-- 减3点能量
-			energys = energys - 3
-		end
-
-		-- 凶猛神像
-		if (GetRelicName() == "凶猛神像") then
-			-- 减3点能量
-			energys = energys - 3
-		end
-	end
-	return energys + attach
-end
-
--- 检验单位能否流血
----@param unit? string 单位名称；缺省为`target`
----@return boolean can 能流血返回真，否则返回假
-local function CanBleed(unit)
-	unit = unit or "target"
-	local creature = UnitCreatureType(unit) or "其它"
-	local position = string.find("野兽,小动物,恶魔,龙类,巨人,人型生物,未指定", creature)
-	return position ~= nil
-end
 
 -- 插件载入
 function DruidCat:OnInitialize()
@@ -257,7 +72,33 @@ function DruidCat:OnInitialize()
 	self.OnMenuRequest = {
 		type = "group",
 		handler = self,
-		args = {}
+		args = {
+			-- 其它
+			other = {
+				type = "header",
+				name = "其它",
+				order = 3,
+			},
+			debug = {
+				type = "toggle",
+				name = "调试模式",
+				desc = "开启或关闭调试模式",
+				order = 4,
+				get = "IsDebugging",
+				set = "SetDebugging"
+			},
+			level = {
+				type = "range",
+				name = "调试等级",
+				desc = "设置或获取调试等级",
+				order = 5,
+				min = 1,
+				max = 3,
+				step = 1,
+				get = "GetDebugLevel",
+				set = "SetDebugLevel"
+			}
+		}
 	}
 end
 
@@ -265,12 +106,14 @@ end
 function DruidCat:OnEnable()
 	self:LevelDebug(3, "插件打开")
 
-	-- 背后状态；可选值：pending, yes, no
-	self.behindStatus = "pending"
+	-- 猛虎之怒时间
+	self.tigerFuryTimer = GetTime() - 18
+	-- 撕扯时间
+	self.ripTimer = GetTime() - 12
 
-	-- 释放瞬间
+	-- 注册施法瞬间事件
 	self:RegisterEvent("SpellStatus_SpellCastInstant")
-	-- 释放失败
+	-- 注册施法失败事件
 	self:RegisterEvent("SpellStatus_SpellCastFailure")
 end
 
@@ -285,343 +128,373 @@ function DruidCat:OnTooltipUpdate()
 	Tablet:SetHint("\n鼠标右键 - 显示插件选项")
 end
 
--- 瞬间施放
+-- 施法瞬间
+---@param id number 法术标识
+---@param name string 法术名称
+---@param rank number 法术等级
+---@param fullName string 法术全名
 function DruidCat:SpellStatus_SpellCastInstant(id, name, rank, fullName)
-	self:LevelDebug(3, "瞬间施放；法术全名：%s", fullName)
+	self:LevelDebug(3, "施法瞬间；法术名称：%", name)
 
-	if name == "撕碎" or name == "毁灭" then
-		self.behindStatus = "yes"
-	elseif not name then
-		self.behindStatus = "pending"
+	-- 记录撕扯时间
+	if name == "撕扯" then
+		self.ripTimer = GetTime()
+	end
+
+	-- 记录猛虎之怒时间
+	if name == "猛虎之怒" then
+		self.tigerFuryTimer = GetTime()
 	end
 end
 
--- 施放失败
+-- 施法失败
+---@param sId number 法术标识
+---@param sName string 法术名称
+---@param sRank number 法术等级
+---@param sFullName string 法术全名
+---@param isActiveSpell boolean 是否为当前法术
+---@param UIEM_Message string 错误信息
+---@param CMSFLP_SpellName string 战斗日志法术名称（CHAT_MSG_SPELL_FAILED_LOCALPLAYER）
+---@param CMSFLP_Message string 战斗日志信息（CHAT_MSG_SPELL_FAILED_LOCALPLAYER）
 function DruidCat:SpellStatus_SpellCastFailure(sId, sName, sRank, sFullName, isActiveSpell, UIEM_Message, CMSFLP_SpellName, CMSFLP_Message)
-	self:LevelDebug(3, "施放失败；法术全名：%s；错误提示：%s", sFullName, UIEM_Message)
-
-	if UIEM_Message and string.find("你必须位于目标背后|距离太远。|你必须面对目标", UIEM_Message) then
-		self.behindStatus = "no"
-	end
+	self:LevelDebug(3, "施法失败；法术名称：%s；错误提示：%s", sName, UIEM_Message)
 end
 
--- 可否背后
----@return boolean can 能否返回真，否则返回假
-function DruidCat:CanBehind()
-	-- 无目标单位
-	if not UnitExists("target") then
-		return false
-	end
-
-	-- 不在10码内	
-	if not CheckInteractDistance("target", 3) then
-		return false
-	end
-
-	-- 目标的目标是自己
-	if UnitIsUnit("targettarget", "player") then
-		return false
-	end
-
-	-- 非背后，当施放技能会刷新该状态
-	if self.behindStatus == "no" then
-		return false
-	end
-
-	-- 尝试背后
-	return true
-end
-
--- 背刺
-function DruidCat:BackStab()
-	-- 潜行
-	if Buff:GetUnit("潜行") then
-		CastSpellByName("毁灭")
-	else
-		-- 自动攻击
-		Spell:AutoAttack()
-		
-		if GetComboPoints("target") == 5 then
-			-- 泄连击
-			self:Termination()
-		elseif Buff:GetUnit("节能施法") then
-			-- 节能
-			if CanBleed(unit) and not Buff:GetUnit("扫击", "target") then
-				-- 流血
-				CastSpellByName("扫击")
-			elseif not Buff:GetUnit("猛虎之怒") then
-				-- 增益
+-- ​​撕裂：自适应一键输出
+function DruidCat:Tear()
+	-- 可流血
+	local canBleed = Bleed:CanBleed()
+	if Buff:FindUnit("潜行") then
+		-- 潜行中
+		if canBleed then
+			if
+				-- 无猛虎之怒
+				not Buff:FindUnit("猛虎之怒") 
+			then
+				-- 补猛虎
 				CastSpellByName("猛虎之怒")
 			else
-				-- 泄能量
-				CastSpellByName("撕碎")
+				-- 流血
+				CastSpellByName("突袭")
 			end
-		elseif Spell:IsReady("精灵之火（野性）") then
-			-- 骗节能
-			CastSpellByName("精灵之火（野性）")
 		else
-			-- 泄能量
-			CastSpellByName("撕碎")
-		end
-	end
-end
-
--- 攒点
-function DruidCat:AccumulatePoint()
-	-- 自动攻击
-	Spell:AutoAttack()
-
-	if GetComboPoints("target") == 5 then
-		-- 泄连击
-		self:Termination()
-	elseif Buff:GetUnit("节能施法") then
-		-- 节能
-		if CanBleed(unit) and not Buff:GetUnit("扫击", "target") then
-			-- 流血
-			CastSpellByName("扫击")
-		elseif not Buff:GetUnit("猛虎之怒") then
-			-- 增益
-			CastSpellByName("猛虎之怒")
-		else
-			-- 泄能量
-			CastSpellByName("爪击")
-		end
-	elseif Spell:IsReady("精灵之火（野性）") then
-		-- 骗节能
-		CastSpellByName("精灵之火（野性）")
-	else
-		-- 泄能量
-		CastSpellByName("爪击")
-	end
-end
-
--- 终结
-function DruidCat:Termination()
-	-- 自动攻击
-	Spell:AutoAttack()
-
-	-- 流血策略
-	local residual = 40 -- 非普通怪
-	if not CanBleed() then
-		residual = 0 -- 不可流血怪
-	elseif UnitClassification("target") == "normal" then
-		residual = 20 -- 普通怪
-	end
-
-	-- 使用法术
-	local percent = Health:GetRemaining("target")
-	if residual > 0 and percent > residual then
-		-- 流血
-		CastSpellByName("撕扯")
-	else
-		CastSpellByName("凶猛撕咬")
-	end
-end
-
--- 抓挠
----@param cooldownSlot? integer 检验冷却槽位索引；缺省为`20`
-function DruidCat:Scratch(cooldownSlot)
-	cooldownSlot = cooldownSlot or 20
-
-	-- 切换为猎豹形态
-
-	SwitchForm(3)
-
-	-- 自动攻击
-	Spell:AutoAttack()
-
-	--变形恢复能量数
-	local metamorphicRecover = GetMetamorphicRecover()
-
-	-- 补猛虎
-	if
-		-- 为猎豹形态
-		IsCat() and
-		-- 能量高于变形恢复
-		UnitMana("player") >= metamorphicRecover and
-		-- 无猛虎之怒效果
-		not Buff:GetUnit("猛虎之怒")
-	then
-		-- 
-		CastSpellByName("猛虎之怒")
-		tigerFuryTimer = GetTime()
-	end
-
-	-- 变形
-	if
-		-- 公共冷却小于0.05
-		GetActionCooldown(cooldownSlot) < 0.05 and
-		(
-			-- 当前能量不足爪击，24是2s回能20点加上流血回能4点
-			UnitMana("player") < GetSkillConsume("爪击") - 24 or
-			(
-				-- 与补猛虎之怒间隔10秒
-				GetTime() - tigerFuryTimer > 10 and
-				-- 当前能量低于扫击消耗
-				UnitMana("player") < GetSkillConsume("扫击")
-			)
-		) and
-		-- 可恢复40能量
-		metamorphicRecover >= 40 and
-		-- 法术足够变形（猎豹形态需要348法力，因取法力值不精确这里约2个变形法力值）
-		GetMana() >= 600
-	then
-		-- 取消猎豹形态
-		CastSpellByName("猎豹形态")
-	end
-
-	-- 节能
-	if Buff:GetUnit("节能施法") then
-		if self:CanBehind() then
-			CastSpellByName("撕碎")
-		else
-			CastSpellByName("爪击")
-		end
-	elseif not Buff:GetUnit("精灵之火", "target") then
-		CastSpellByName("精灵之火（野性）")
-	end
-
-	-- 补撕扯
-	if GetComboPoints("target") > 0 and not Buff:GetUnit("撕扯", "target") and CanBleed() then
-		CastSpellByName("撕扯")
-		ripTimer = GetTime()
-	elseif GetComboPoints("target") > 3 and UnitMana("player") < 60 and GetTime() - ripTimer < 9 then
-		-- 能量低于60
-		-- 撕扯剩余3s内就不放凶猛，留星等补撕扯
-		CastSpellByName("凶猛撕咬")
-	end
-
-	-- T2.5套装效果
-	if Buff:GetUnit("强化攻击") then
-		-- 取撕碎消耗能量数
-		if self:CanBehind() and GetSkillConsume("撕碎") <= 48 then
-			-- 60能量撕碎性价比太低
-			CastSpellByName("撕碎")
-		else
-			CastSpellByName("爪击")
-		end
-	elseif CanBleed() then
-		if not Buff:GetUnit("扫击", "target") then
-			CastSpellByName("扫击")
-		elseif Buff:GetUnit("撕扯", "target") then
-			CastSpellByName("爪击")
+			-- 伤害
+			CastSpellByName("毁灭")
 		end
 	else
-		CastSpellByName("爪击")
-	end
+		-- 非潜行中
+		if self.helper:IsCat() then
+			-- 猫形态
 
-	CastSpellByName("精灵之火（野性）")
+			-- 自动攻击
+			self.helper:AutoAttack()
+
+			-- 爪击能耗
+			local clawEnergy = self.helper:GetSpellConsume("爪击")
+			-- 扫击能耗
+			local rakeEnergy = self.helper:GetSpellConsume("扫击")
+			-- 撕碎能耗
+			local shredEnergy = self.helper:GetSpellConsume("撕碎")
+
+			-- 变形回能
+			local metamorphicRecovery = self.helper:GetMetamorphicRecovery()
+
+			if
+				-- 无冷却时间（公共冷却）
+				Spell:IsReady("猎豹形态")
+				and (
+					-- 能量不够爪击(-20是普通回能)
+					UnitMana("player") < clawEnergy - 20
+					or (
+						-- 能量不够扫击（变身5.5s以后，能量足够不考虑回能）
+						UnitMana("player") < rakeEnergy
+						-- 与上个猛虎已过去5.5秒以上
+						and GetTime() - self.tigerFuryTimer > 5.5
+					)
+					or (
+						-- 能量不够撕碎(-20是回能)
+						UnitMana("player") < shredEnergy
+						-- 不可流血
+						and not canBleed
+						-- 在背后
+						and Behind:IsBehind()
+						-- 低于4连击点
+						and GetComboPoints("target") < 4
+					)
+				)
+				-- 变形回能60及以上
+				and metamorphicRecovery >= 60
+				-- 法力足够变形（猎豹形态需要348法力）
+				and self.helper:GetMana() >= 400
+				-- 无节能施法
+				and not Buff:FindUnit("节能施法")
+			then
+				-- 取消猫形态
+				CastSpellByName("猎豹形态")
+			else
+				-- 有扫击
+				local hasRake = self.helper:HasDebuff('扫击')
+				-- 有撕扯
+				local hasRip = self.helper:HasDebuff('撕扯')
+
+				if
+					-- 饰品1可用
+					self.helper:CanJewelry(13)
+					-- 有扫击
+					and hasRake
+					-- 有撕扯
+					and hasRip
+				then
+					-- 使用饰品1
+					UseInventoryItem(13)
+				end
+
+				if
+					-- 饰品2可用
+					self.helper:CanJewelry(14)
+					-- 有扫击
+					and hasRake
+					-- 有撕扯
+					and hasRip
+				then
+					-- 使用饰品2
+					UseInventoryItem(14)
+				end
+
+				-- 目标是BOSS
+				local isBoss = Behind:IsBoss()
+
+				if
+					-- 是BOSS
+					isBoss
+					-- 目标生命低于30%
+					and Health:GetRemaining("target") < 30
+					-- 能量低于40
+					and UnitMana("player") < 40
+					-- 狂暴就绪
+					and Spell:IsReady("狂暴")
+				then
+					-- 回能
+					CastSpellByName("狂暴")
+				end
 	
-	-- 凶猛撕咬：终结技，消耗30能量，12秒流血
-	-- 撕扯：终结技，消耗35能量，立即伤害
-	-- 扫击：奖励连击点，消耗40能量
-	-- 撕碎：奖励连击点，消耗60能量，背后发动
-	-- 爪击：奖励连击点，消耗45能量
-	-- 猛虎之怒：增益，消耗30能量，持续15秒
+				if
+					-- 无猛虎之怒
+					not Buff:FindUnit("猛虎之怒") 
+					-- 能量有变形回能及以上数
+					and UnitMana("player") >= metamorphicRecovery
+					-- 可流血
+					and canBleed
+					-- 无血之狂暴
+					or not Buff:FindUnit("血之狂暴")
+				then
+					-- 补猛虎
+					CastSpellByName("猛虎之怒")
+				end
+
+				if
+					-- 有节能施法
+					Buff:FindUnit("节能施法")
+					-- 在背后
+					and Behind:IsBehind()
+				then
+					-- 消节能
+					CastSpellByName("撕碎")
+				elseif
+					-- 是BOSS
+					isBoss
+					-- 无精灵之火
+					and not Buff:FindUnit("精灵之火", "target")
+				then
+					-- 补精灵之火
+					CastSpellByName("精灵之火（野性）")
+				end
+	
+				if
+					-- 可流血
+					canBleed
+					-- 无撕扯
+					and self.helper:CanDebuff("撕扯")
+					-- 有星
+					and GetComboPoints("target") > 0
+				then
+					-- 补撕扯
+					CastSpellByName("撕扯")
+				elseif
+					-- 有3星以上
+					GetComboPoints("target") > 3
+					-- 能量低于60
+					and UnitMana("player") < 60
+					and (
+						-- 与撕扯已过去9秒以内，撕扯剩余3s内就不放凶猛，留星等补撕扯
+						GetTime() - self.ripTimer < 9
+						-- 不可流血
+						or not canBleed
+					)
+				then
+					-- 消星
+					CastSpellByName("凶猛撕咬")
+				end
+
+				if
+					-- 可流血
+					canBleed
+					-- 无强化攻击
+					and not Buff:FindUnit("强化攻击")
+					-- 可扫击
+					and self.helper:CanDebuff("扫击")
+				then
+					-- 补扫击
+					CastSpellByName("扫击")
+				end
+
+				if
+					(
+						-- 有强化攻击
+						Buff:FindUnit("强化攻击")
+						-- 能量有60及以上
+						or UnitMana("player") >= 60
+						-- 不可流血（爪击不享受迸裂创伤）
+						or not canBleed
+					)
+					and (
+						-- 撕碎能量消耗低于49
+						shredEnergy < 49
+						-- 有撕裂神像
+						or Buff:FindUnit("撕裂神像")
+					)
+					-- 在背后
+					and Behind:IsBehind()
+				then
+					-- 背刺
+					CastSpellByName("撕碎")
+				else
+					-- 消能量
+					CastSpellByName("爪击")
+				end
+
+				-- 骗节能
+				if Spell:IsReady("精灵之火（野性）") then
+					CastSpellByName("精灵之火（野性）")
+				end
+			end
+		else
+			-- 变猫形态（变形回能量）
+			self.helper:SwitchForm(3)
+		end
+	end
+	
+	-- /console Sound_EnableErrorSpeech 1
+	-- 清除提示（能量不足、法术未就绪等）
+	UIErrorsFrame:Clear()
 end
 
--- 冲锋
+-- 冲锋：切换到熊形态，冲锋目标
 function DruidCat:Charge()
-	if not Spell:IsReady("野性冲锋") then
-		Prompt:Warning("冲锋冷却中")
-	end
+	-- 技能就绪
+	if Spell:IsReady("野性冲锋") then
+		local rorm = self.helper:GetForm()
+		if rorm == 1 then
+			-- 熊形态
+			if UnitMana("player") < 5 and Spell:IsReady("狂怒") then
+				CastSpellByName("狂怒")
+			end
 
-	local rorm = GetCurrentForm()
-	if not rorm then
-		-- 人形态
-		if GetMana() >= 400 then
-			SwitchForm(1)
-			CastSpellByName("野性冲锋")
+			if UnitMana("player") >= 5 then
+				CastSpellByName("野性冲锋")
+			else
+				Prompt:Warning("冲锋：怒气不足")
+			end
 		else
-			Prompt:Warning("变形法力不足")
-		end
-	elseif rorm == 1 then
-		-- 熊形态
-		if UnitMana("player") < 5 and Spell:IsReady("狂怒") then
-			CastSpellByName("狂怒")
-		end
-
-		if UnitMana("player") >= 5 then
-			CastSpellByName("野性冲锋")
-		else
-			Prompt:Warning("冲锋怒气不足")
+			-- 非熊形态
+			if self.helper:GetMana() >= 400 then
+				self.helper:SwitchForm(1)
+			else
+				Prompt:Warning("冲锋：变形法力不足")
+			end
 		end
 	else
-		-- 非熊形态
-		if GetMana() >= 800 then
-			SwitchForm(1)
-			CastSpellByName("野性冲锋")
-		else
-			Prompt:Warning("变形法力不足")
-		end
+		Prompt:Warning("冲锋：技能冷却中")
 	end
 end
 
--- 昏迷
-function DruidCat:Coma()
-	if not Spell:IsReady("重击") then
-		Prompt:Warning("重击冷却中")
-	end
+-- 重击：换到熊形态，昏迷目标
+function DruidCat:Bash()
+	if Spell:IsReady("重击") then
+		local rorm = self.helper:GetForm()
+		if rorm == 1 then
+			-- 熊形态
+			if UnitMana("player") < 10 and Spell:IsReady("狂怒") then
+				CastSpellByName("狂怒")
+			end
 
-	local rorm = GetCurrentForm()
-	if not rorm then
-		-- 人形态
-		if GetMana() >= 400 then
-			SwitchForm(1)
-			CastSpellByName("重击")
+			if UnitMana("player") >= 10 then
+				CastSpellByName("重击")
+			else
+				Prompt:Warning("重击：怒气不足")
+			end
 		else
-			Prompt:Warning("变形法力不足")
-		end
-	elseif rorm == 1 then
-		-- 熊形态
-		if UnitMana("player") < 10 and Spell:IsReady("狂怒") then
-			CastSpellByName("狂怒")
-		end
-
-		if UnitMana("player") >= 10 then
-			CastSpellByName("重击")
-		else
-			Prompt:Warning("重击怒气不足")
+			-- 非熊形态
+			if self.helper:GetMana() >= 400 then
+				self.helper:SwitchForm(1)
+			else
+				Prompt:Warning("重击：变形法力不足")
+			end
 		end
 	else
-		-- 非熊形态
-		if GetMana() >= 800 then
-			SwitchForm(1)
-			CastSpellByName("重击")
-		else
-			Prompt:Warning("变形法力不足")
-		end
+		Prompt:Warning("重击：技能冷却中")
 	end
 end
 
-function DruidCat:Test()
-	-- Printd("-- -- -- -- -- -- -- -- -- -- -- -")
-	-- Printd("变形恢复能量数：", GetMetamorphicRecover())
-	-- Printd("当前形态：", GetCurrentForm())
-	-- Printd("是否为猎豹形态：", IsCatForm(3))
-	-- Printd("起源套甲套装计数：", GetSuitCount("起源套甲"))
-	-- Printd("头盔附魔标识：", ItemLinkEnchantID(GetInventoryItemLink("player", 1)))
-	
-	-- Printd("圣物名称：", GetRelicName())
-	-- Printd("撕碎消耗能量数：", GetSkillConsume("撕碎"))
-	-- Printd("爪击消耗能量数：", GetSkillConsume("爪击"))
-	-- Printd("扫击消耗能量数：", GetSkillConsume("扫击"))
-
-	self:LevelDebug(3, "测试；背后状态：%s；可否背后：%s", self.behindStatus, self:CanBehind())
-	if self:CanBehind() then
-		CastSpellByName("撕碎")
+-- 潜行：换到猫形态，潜行
+function DruidCat:Stealth()
+	-- 正潜行中时，法术将处于冷却状态
+	if Buff:FindUnit("潜行") then
+		Prompt:Warning("潜行：已在潜行状态")
+	elseif Spell:IsReady("潜行") then
+		local rorm = self.helper:GetForm()
+		if rorm == 3 then
+			-- 猫形态
+			if not Buff:FindUnit("潜行") then
+				CastSpellByName("潜行")
+			else
+				Prompt:Warning("潜行：已在潜行状态")
+			end
+		else
+			-- 非猫形态
+			if self.helper:GetMana() >= 400 then
+				self.helper:SwitchForm(3)
+			else
+				Prompt:Warning("潜行：变形法力不足")
+			end
+		end
 	else
-		CastSpellByName("爪击")
+		Prompt:Warning("潜行：技能冷却中")
 	end
-	
 end
 
--- 猎豹形态：348法力
--- 猛虎之怒：30能量，1秒冷却；持续18秒提高伤害
--- 节能施法：触发增益；下一个攻击技能免能量消耗
--- 精灵之火（野性）：6秒冷却；持续40秒降低护甲
--- 爪击：34能量；立即伤害，奖励1个连击点
--- 撕碎：48能量；背刺立即伤害，奖励1个连击点
--- 扫击：29能量；立即伤害和9秒持续伤害，奖励1个连击点
--- 撕扯：30能量；终结技，持续12秒伤害
--- 凶猛撕咬：35能量；终结技，立即伤害
+--[[
+
+天赋:
+迸裂创伤（3/3）：每个流血效果使爪击伤害提高[10/20/30]%，凶猛撕咬伤害提高[3/4/5]%。（解决爪击伤害的问题）
+血性狂乱（2/2）：猛虎之怒持续时间延长[6/12]秒。使用猛虎之怒还获得血之狂暴增益（攻击速度提高[10/20]%，持续12秒）
+原始狂怒（2/2）：造成暴击后额外增加一星。
+远古蛮力（2/2）：流血周期性伤害将恢复[5/10]能量。（解决输出能量问题）
+
+套装:
+起源套甲（5/5）- 强化攻击：下一个XXX、XXX暴击几率提高N%（T2.5套装效果）
+
+技能：
+猎豹形态：消耗348法力
+精灵之火（野性）（Faerie Fire (Feral)）：冷却6秒，持续40秒降低175护甲
+猛虎之怒（Tiger's Fury）：消耗30能量，持续6秒伤害提高50点，变形效果消失
+狂暴：冷却6分，持续20秒100%回能速度，移除恐惧
+爪击（Claw）：消耗45能量，获得连击点，产生伤害
+扫击（Rake）：消耗40能量，获得连击点，持续9秒伤害（3秒一跳）
+撕碎（Shred）：消耗60能量，获得连击点，需要背后，产生伤害
+毁灭（Ravage）：消耗60能量，获得连击点，需要潜行、背后，产生伤害
+突袭（Pounce）：消耗50能量，获得连击点，需要潜行、背后，眩晕2秒，施加血袭减益（持续18秒伤害，3秒一跳）
+撕扯（Rip）：消耗30能量、连击点，持续12秒伤害（2秒一跳）
+凶猛撕咬（Ferocious Bite）：消耗35能量、连击点，产生伤害
+
+]]
