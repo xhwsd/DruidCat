@@ -54,11 +54,11 @@
 
 ## 参考
 
-## 天赋
+### 天赋
 [![跳转至天赋模拟器](Talent.png)](https://talents.turtle-wow.org/druid?points=BSAaAIAAAAAAAAFYADBYTSAKFQBAAoAAAAAAAAAAAAA=)
 
 
-## 文档
+### 文档
 - [乌龟服1.17.2野德输出不完全指北](https://www.bilibili.com/opus/1058900087781982213) by Crazydru 
 - [乌龟服猫德的持续探索](https://luntan.turtle-wow.org/viewtopic.php?t=222) by 大自在天魔 
 
