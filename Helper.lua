@@ -266,5 +266,5 @@ function Helper:AutoAttack()
 	end
 end
 
--- 将辅助对象注入到猫德插件中
+-- 将辅助注入到插件中
 DruidCat.helper = Helper

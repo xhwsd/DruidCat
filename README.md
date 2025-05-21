@@ -3,8 +3,6 @@
 > __自娱自乐，不做任何保证！__  
 > 如遇到BUG可反馈至 xhwsd@qq.com 邮箱
 
-![功能预览](Preview.png)
-
 ## 使用
 - 安装`!Libs`插件
 - [可选][[文档](https://github.com/xhwsd/SuperMacro/)][[下载](https://github.com/xhwsd/SuperMacro/archive/master.zip)]安装`SuperMacro`插件，安装后将获得更多宏位
@@ -16,8 +14,6 @@
 
 
 ## 可用宏
-
-> 本插件参考了`Crazydru`一键输出猫德宏，再此鸣谢！
 
 ###  ​撕裂
 
@@ -56,10 +52,16 @@
 ```
 
 
-## 参考天赋
+## 参考
+
+## 天赋
 [![跳转至天赋模拟器](Talent.png)](https://talents.turtle-wow.org/druid?points=BSAaAIAAAAAAAAFYADBYTSAKFQBAAoAAAAAAAAAAAAA=)
 
 
-## 参考文档
+## 文档
 - [乌龟服1.17.2野德输出不完全指北](https://www.bilibili.com/opus/1058900087781982213) by Crazydru 
 - [乌龟服猫德的持续探索](https://luntan.turtle-wow.org/viewtopic.php?t=222) by 大自在天魔 
+
+
+## 鸣谢
+- `Crazydru#4246`
