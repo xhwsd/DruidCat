@@ -174,19 +174,16 @@ end
 
 -- 玩家移动
 function Library:SpecialEvents_PlayerMoving()
-	-- self:LevelDebug(3, "玩家移动；背后状态：%s", self.status)
 	self.status = "pending"
 end
 
 -- 玩家静止
 function Library:SpecialEvents_PlayerStationary()
-	-- self:LevelDebug(3, "玩家静止；背后状态：%s", self.status)
 	self.status = "pending"
 end
 
 -- 重置状态
 function Library:Behind_ResetStatus()
-	-- self:LevelDebug(3, "刷重置状态；背后状态：%s", self.status)
 	-- 转为待定状态
 	if self.status == "no" then
 		self.status = "pending"
@@ -213,7 +210,7 @@ function Library:IsBehind()
 	end
 
 	-- 目标的目标是自己（目标正面向自己）
-	if UnitIsUnit("targettarget", "player") then
+	if UnitIsUnit("targettarget", "player") and not UnitIsPlayer("target") then
 		return false
 	end
 

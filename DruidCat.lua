@@ -51,7 +51,49 @@ function DruidCat:OnInitialize()
 	self:RegisterDB("DruidCatDB")
 	-- 注册默认值
 	self:RegisterDefaults('profile', {
-
+		-- 时机
+		timing = {
+			-- 斩杀生命
+			killHealth = 30,
+			-- 能量匮乏
+			energyDeficit = 40,
+			-- ​能量富裕​​
+			energySurplus = 60,
+			-- 饰品1
+			-- 饰品1
+			jewelry1 = {
+				-- 有扫击时
+				hasRake = true,
+				-- 有撕扯时
+				hasRip = true,
+				-- 是斩杀时
+				isKill = false,
+				-- 是BOSS时
+				isBoss = false,
+			},
+			-- 饰品2
+			jewelry2 = {
+				-- 有扫击时
+				hasRake = true,
+				-- 有撕扯时
+				hasRip = true,
+				-- 是斩杀时
+				isKill = false,
+				-- 是BOSS时
+				isBoss = false,
+			},
+			-- 狂暴
+			berserk = {
+				-- 有扫击时
+				hasRake = true,
+				-- 有撕扯时
+				hasRip = true,
+				-- 是斩杀时
+				isKill = true,
+				-- 是BOSS时
+				isBoss = true,
+			},
+		}
 	})
 
 	-- 具体图标
@@ -73,6 +115,240 @@ function DruidCat:OnInitialize()
 		type = "group",
 		handler = self,
 		args = {
+			-- 时机
+			timing = {
+				type = "group",
+				name = "时机",
+				desc = "设置法术等触发时机",
+				order = 1,
+				args = {
+					killHealth = {
+						type = "range",
+						name = "斩杀生命",
+						desc = "目标生命小于或等于该百分比时为斩杀",
+						order = 6,
+						min = 0,
+						max = 100,
+						step = 1,
+						get = function()
+							return self.db.profile.timing.killHealth
+						end,
+						set = function(value)
+							self.db.profile.timing.killHealth = value
+						end
+					},
+					energyDeficit = {
+						type = "range",
+						name = "能量匮乏",
+						desc = "当能量小于或等于该值时为能量匮乏",
+						order = 6,
+						min = 0,
+						max = 100,
+						step = 1,
+						get = function()
+							return self.db.profile.timing.energyDeficit
+						end,
+						set = function(value)
+							self.db.profile.timing.energyDeficit = value
+						end
+					},
+					energySurplus = {
+						type = "range",
+						name = "能量富裕",
+						desc = "当能量大于或等于该值时为富裕",
+						order = 6,
+						min = 0,
+						max = 100,
+						step = 1,
+						get = function()
+							return self.db.profile.timing.energySurplus
+						end,
+						set = function(value)
+							self.db.profile.timing.energySurplus = value
+						end
+					},
+					jewelry1 = {
+						type = "group",
+						name = "饰品1",
+						desc = "设置饰品1施放时机，注意是并且条件",
+						order = 4,
+						args = {
+							hasRake = {
+								type = "toggle",
+								name = "有扫击时",
+								desc = "目标有扫击减益时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.jewelry1.hasRake
+								end,
+								set = function(value)
+									self.db.profile.timing.jewelry1.hasRake = value
+								end
+							},
+							hasRip = {
+								type = "toggle",
+								name = "有撕扯时",
+								desc = "目标有撕扯减益时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.jewelry1.hasRip
+								end,
+								set = function(value)
+									self.db.profile.timing.jewelry1.hasRip = value
+								end
+							},
+							isKill = {
+								type = "toggle",
+								name = "已斩杀时",
+								desc = "目标进入斩杀时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.jewelry1.isKill
+								end,
+								set = function(value)
+									self.db.profile.timing.jewelry1.isKill = value
+								end
+							},
+							isBoss = {
+								type = "toggle",
+								name = "是BOSS时",
+								desc = "目标是BOSS时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.jewelry1.isBoss
+								end,
+								set = function(value)
+									self.db.profile.timing.jewelry1.isBoss = value
+								end
+							},
+						}
+					},
+					jewelry2 = {
+						type = "group",
+						name = "饰品2",
+						desc = "设置饰品2使用时机，注意是并且条件",
+						order = 5,
+						args = {
+							hasRake = {
+								type = "toggle",
+								name = "有扫击时",
+								desc = "目标有扫击减益时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.jewelry2.hasRake
+								end,
+								set = function(value)
+									self.db.profile.timing.jewelry2.hasRake = value
+								end
+							},
+							hasRip = {
+								type = "toggle",
+								name = "有撕扯时",
+								desc = "目标有撕扯减益时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.jewelry2.hasRip
+								end,
+								set = function(value)
+									self.db.profile.timing.jewelry2.hasRip = value
+								end
+							},
+								isKill = {
+								type = "toggle",
+								name = "已斩杀时",
+								desc = "目标进入斩杀时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.jewelry2.isKill
+								end,
+								set = function(value)
+									self.db.profile.timing.jewelry2.isKill = value
+								end
+							},
+							isBoss = {
+								type = "toggle",
+								name = "是BOSS时",
+								desc = "目标是BOSS时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.jewelry2.isBoss
+								end,
+								set = function(value)
+									self.db.profile.timing.jewelry2.isBoss = value
+								end
+							},
+						}
+					},
+					berserk = {
+						type = "group",
+						name = "狂暴",
+						desc = "设置狂暴使用时机，注意是并且条件",
+						order = 5,
+						args = {
+							hasRake = {
+								type = "toggle",
+								name = "有扫击时",
+								desc = "目标有扫击减益时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.berserk.hasRake
+								end,
+								set = function(value)
+									self.db.profile.timing.berserk.hasRake = value
+								end
+							},
+							hasRip = {
+								type = "toggle",
+								name = "有撕扯时",
+								desc = "目标有撕扯减益时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.berserk.hasRip
+								end,
+								set = function(value)
+									self.db.profile.timing.berserk.hasRip = value
+								end
+							},
+								isKill = {
+								type = "toggle",
+								name = "已斩杀时",
+								desc = "目标进入斩杀时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.berserk.isKill
+								end,
+								set = function(value)
+									self.db.profile.timing.berserk.isKill = value
+								end
+							},
+							isBoss = {
+								type = "toggle",
+								name = "是BOSS时",
+								desc = "目标是BOSS时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.berserk.isBoss
+								end,
+								set = function(value)
+									self.db.profile.timing.berserk.isBoss = value
+								end
+							},
+							energyDeficit = {
+								type = "toggle",
+								name = "能量匮乏",
+								desc = "当自己能量匮乏时",
+								order = 1,
+								get = function()
+									return self.db.profile.timing.berserk.energyDeficit
+								end,
+								set = function(value)
+									self.db.profile.timing.berserk.energyDeficit = value
+								end
+							},
+						}
+					},
+				}
+			},
 			-- 其它
 			other = {
 				type = "header",
@@ -203,7 +479,7 @@ function DruidCat:Tear()
 				-- 无冷却时间（公共冷却）
 				Spell:IsReady("猎豹形态")
 				and (
-					-- 能量不够爪击(-20是普通回能)
+					-- 能量不够爪击(减2秒呼吸回能20)
 					UnitMana("player") < clawEnergy - 20
 					or (
 						-- 能量不够扫击（变身5.5s以后，能量足够不考虑回能）
@@ -212,8 +488,8 @@ function DruidCat:Tear()
 						and GetTime() - self.tigerFuryTimer > 5.5
 					)
 					or (
-						-- 能量不够撕碎(-20是回能)
-						UnitMana("player") < shredEnergy
+						-- 能量不够撕碎(减2秒呼吸回能20)
+						UnitMana("player") < shredEnergy - 20
 						-- 不可流血
 						and not canBleed
 						-- 在背后
@@ -236,16 +512,26 @@ function DruidCat:Tear()
 				local hasRake = self.helper:HasDebuff('扫击')
 				-- 有撕扯
 				local hasRip = self.helper:HasDebuff('撕扯')
+				-- 是斩杀
+				local isKill = Health:GetRemaining("target") <= self.db.profile.timing.killHealth
+				-- 能量匮乏
+				local energyDeficit = UnitMana("player") <= self.db.profile.timing.energyDeficit
+				-- 是BOSS
+				local isBoss = Behind:IsBoss()
 
 				if
 					-- 饰品1可用
 					self.helper:CanJewelry(13)
 					-- 有扫击
-					and hasRake
+					and (not self.db.profile.timing.jewelry1.hasRake or hasRake)
 					-- 有撕扯
-					and hasRip
+					and (not self.db.profile.timing.jewelry1.hasRip or hasRip)
+					-- 是斩杀
+					and (not self.db.profile.timing.jewelry1.isKill or isKill)
+					-- 是BOOS
+					and (not self.db.profile.timing.jewelry1.isBoss or isBoss)
 				then
-					-- 使用饰品1
+					-- 爆发
 					UseInventoryItem(13)
 				end
 
@@ -253,31 +539,36 @@ function DruidCat:Tear()
 					-- 饰品2可用
 					self.helper:CanJewelry(14)
 					-- 有扫击
-					and hasRake
+					and (not self.db.profile.timing.jewelry2.hasRake or hasRake)
 					-- 有撕扯
-					and hasRip
+					and (not self.db.profile.timing.jewelry2.hasRip or hasRip)
+					-- 是斩杀
+					and (not self.db.profile.timing.jewelry2.isKill or isKill)
+					-- 是BOOS
+					and (not self.db.profile.timing.jewelry2.isBoss or isBoss)
 				then
-					-- 使用饰品2
+					-- 爆发
 					UseInventoryItem(14)
 				end
 
-				-- 目标是BOSS
-				local isBoss = Behind:IsBoss()
-
 				if
-					-- 是BOSS
-					isBoss
-					-- 目标生命低于30%
-					and Health:GetRemaining("target") < 30
-					-- 能量低于40
-					and UnitMana("player") < 40
 					-- 狂暴就绪
-					and Spell:IsReady("狂暴")
+					Spell:IsReady("狂暴")
+					-- 有扫击
+					and (not self.db.profile.timing.berserk.hasRake or hasRake)
+					-- 有撕扯
+					and (not self.db.profile.timing.berserk.hasRip or hasRip)
+					-- 是斩杀
+					and (not self.db.profile.timing.berserk.isKill or isKill)
+					-- 是BOOS
+					and (not self.db.profile.timing.berserk.isBoss or isBoss)
+					-- 能量匮乏
+					and (not self.db.profile.timing.berserk.energyDeficit or energyDeficit)
 				then
 					-- 回能
 					CastSpellByName("狂暴")
 				end
-	
+
 				if
 					-- 无猛虎之怒
 					not Buff:FindUnit("猛虎之怒") 
@@ -313,7 +604,7 @@ function DruidCat:Tear()
 				if
 					-- 可流血
 					canBleed
-					-- 无撕扯
+					-- 可撕扯
 					and self.helper:CanDebuff("撕扯")
 					-- 有星
 					and GetComboPoints("target") > 0
@@ -339,10 +630,10 @@ function DruidCat:Tear()
 				if
 					-- 可流血
 					canBleed
-					-- 无强化攻击
-					and not Buff:FindUnit("强化攻击")
 					-- 可扫击
 					and self.helper:CanDebuff("扫击")
+					-- 无强化攻击
+					and not Buff:FindUnit("强化攻击")
 				then
 					-- 补扫击
 					CastSpellByName("扫击")
@@ -488,7 +779,7 @@ end
 猎豹形态：消耗348法力
 精灵之火（野性）（Faerie Fire (Feral)）：冷却6秒，持续40秒降低175护甲
 猛虎之怒（Tiger's Fury）：消耗30能量，持续6秒伤害提高50点，变形效果消失
-狂暴：冷却6分，持续20秒100%回能速度，移除恐惧
+狂暴（Berserk）：冷却6分，持续20秒100%回能速度，移除恐惧
 爪击（Claw）：消耗45能量，获得连击点，产生伤害
 扫击（Rake）：消耗40能量，获得连击点，持续9秒伤害（3秒一跳）
 撕碎（Shred）：消耗60能量，获得连击点，需要背后，产生伤害

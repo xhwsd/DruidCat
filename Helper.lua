@@ -192,30 +192,6 @@ function Helper:GetRelicName()
 	return link and ItemLinkToName(link) or ""
 end
 
--- 检验单位能否流血
----@param unit? string 单位名称；缺省为`target`
----@return boolean can 能流血返回真，否则返回假
-function Helper:CanBleed(unit)
-	unit = unit or "target"
-
-	local name = UnitName(unit)
-	if not name then
-		return false
-	else
-		-- 元素生物、机械先认定为不可流血
-		local type = UnitCreatureType(unit) or "其它"
-		if string.find("元素生物,机械", type) then
-			-- 位于白名单
-			return BLEED_WHITELIST[name]
-		elseif BLEED_BLACKLIST[name] then
-			-- 位于黑名单
-			return false
-		else
-			return true
-		end
-	end
-end
-
 -- 检验单位能否施加减益
 ---@param debuff string 减益名称
 ---@param unit? string 目标单位；缺省为`target`
