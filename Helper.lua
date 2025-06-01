@@ -168,7 +168,7 @@ end
 -- 取套装计数
 ---@param suit string 套装名称；可选值：`起源套甲`
 ---@param attach? number 附加能量数；缺省为`0`
----@return integer count 套装计数
+---@return number count 套装计数
 function Helper:GetSuitCount(suit, attach)
 	attach = attach or 0
 
