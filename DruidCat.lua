@@ -37,8 +37,7 @@ local Health = AceLibrary("Wsd-Health-1.0")
 local Prompt = AceLibrary("Wsd-Prompt-1.0")
 ---@type Wsd-Spell-1.0
 local Spell = AceLibrary("Wsd-Spell-1.0")
--- 战斗中
-local combat = UnitAffectingCombat("player")
+
 -- 插件载入
 function DruidCat:OnInitialize()
 	-- 精简标题
@@ -441,6 +440,8 @@ end
 function DruidCat:Tear()
 	-- 可流血
 	local canBleed = Bleed:CanBleed()
+	-- 战斗中
+	local combat = UnitAffectingCombat("player")
     -- 战斗中目标选择为近战，脱战为最远距离
     if combat then
 	    SetCVar("targetNearestDistance", 5)
@@ -754,6 +755,8 @@ end
 
 -- 潜行：换到猫形态，潜行
 function DruidCat:Stealth()
+	-- 战斗中
+	local combat = UnitAffectingCombat("player")
 	-- 正潜行中时，法术将处于冷却状态
 	if Buff:FindUnit("潜行") then
 		Prompt:Warning("潜行：已在潜行状态")
