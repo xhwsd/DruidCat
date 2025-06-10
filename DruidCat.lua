@@ -37,7 +37,8 @@ local Health = AceLibrary("Wsd-Health-1.0")
 local Prompt = AceLibrary("Wsd-Prompt-1.0")
 ---@type Wsd-Spell-1.0
 local Spell = AceLibrary("Wsd-Spell-1.0")
-
+-- 战斗中
+local combat = UnitAffectingCombat("player")
 -- 插件载入
 function DruidCat:OnInitialize()
 	-- 精简标题
@@ -440,6 +441,13 @@ end
 function DruidCat:Tear()
 	-- 可流血
 	local canBleed = Bleed:CanBleed()
+    -- 战斗中目标选择为近战，脱战为最远距离
+    if combat then
+	    SetCVar("targetNearestDistance", 5)
+    else
+	    SetCVar("targetNearestDistance", 41)
+    end
+
 	if Buff:FindUnit("潜行") then
 		-- 潜行中
 		if canBleed then
@@ -461,7 +469,14 @@ function DruidCat:Tear()
 		-- 非潜行中
 		if self.helper:IsCat() then
 			-- 猫形态
-
+            --无目标切换目标
+            if not UnitExists("target") then
+                TargetLastEnemy()
+            end
+            --无目标或者目标死亡切换目标
+            if not UnitExists("target") or UnitIsDeadOrGhost("target") then
+                TargetNearestEnemy()
+            end
 			-- 自动攻击
 			self.helper:AutoAttack()
 
@@ -482,10 +497,10 @@ function DruidCat:Tear()
 					-- 能量不够爪击(减2秒呼吸回能20)
 					UnitMana("player") < clawEnergy - 20
 					or (
-						-- 能量不够扫击（变身5.5s以后，能量足够不考虑回能）
+						-- 能量不够扫击（变身10s以后，能量足够不考虑回能）
 						UnitMana("player") < rakeEnergy
-						-- 与上个猛虎已过去5.5秒以上
-						and GetTime() - self.tigerFuryTimer > 5.5
+						-- 与上个猛虎已过去10秒以上
+						and GetTime() - self.tigerFuryTimer > 10
 					)
 					or (
 						-- 能量不够撕碎(减2秒呼吸回能20)
@@ -507,6 +522,8 @@ function DruidCat:Tear()
 			then
 				-- 取消猫形态
 				CastSpellByName("猎豹形态")
+                -- 取消当前目标，避免人形普攻
+                ClearTarget()
 			else
 				-- 有扫击
 				local hasRake = self.helper:HasDebuff('扫击')
@@ -555,9 +572,9 @@ function DruidCat:Tear()
 					-- 狂暴就绪
 					Spell:IsReady("狂暴")
 					-- 有扫击
-					and (not self.db.profile.timing.berserk.hasRake or hasRake)
+					-- and (not self.db.profile.timing.berserk.hasRake or hasRake)
 					-- 有撕扯
-					and (not self.db.profile.timing.berserk.hasRip or hasRip)
+					-- and (not self.db.profile.timing.berserk.hasRip or hasRip)
 					-- 是斩杀
 					and (not self.db.profile.timing.berserk.isKill or isKill)
 					-- 是BOOS
@@ -614,8 +631,8 @@ function DruidCat:Tear()
 				elseif
 					-- 有3星以上
 					GetComboPoints("target") > 3
-					-- 能量低于60
-					and UnitMana("player") < 60
+					-- 能量低于70
+					and UnitMana("player") < 70
 					and (
 						-- 与撕扯已过去9秒以内，撕扯剩余3s内就不放凶猛，留星等补撕扯
 						GetTime() - self.ripTimer < 9
@@ -645,15 +662,13 @@ function DruidCat:Tear()
 						Buff:FindUnit("强化攻击")
 						-- 能量有60及以上
 						or UnitMana("player") >= 60
+                        -- 有撕裂神像
+						or Buff:FindUnit("撕裂神像")
 						-- 不可流血（爪击不享受迸裂创伤）
 						or not canBleed
 					)
-					and (
-						-- 撕碎能量消耗低于49
-						shredEnergy < 49
-						-- 有撕裂神像
-						or Buff:FindUnit("撕裂神像")
-					)
+                    -- 撕碎能量消耗低于49
+					and shredEnergy < 49
 					-- 在背后
 					and Behind:IsBehind()
 				then
@@ -746,10 +761,12 @@ function DruidCat:Stealth()
 		local rorm = self.helper:GetForm()
 		if rorm == 3 then
 			-- 猫形态
-			if not Buff:FindUnit("潜行") then
-				CastSpellByName("潜行")
-			else
+			if Buff:FindUnit("潜行") then
 				Prompt:Warning("潜行：已在潜行状态")
+			elseif combat then
+				Prompt:Warning("潜行：在战斗中")
+            else
+				CastSpellByName("潜行")
 			end
 		else
 			-- 非猫形态
