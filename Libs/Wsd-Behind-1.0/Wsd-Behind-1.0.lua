@@ -215,7 +215,7 @@ function Library:IsBehind()
 	end
 
 	-- 已安装UnitXP模组
-	if UnitXP then
+	if pcall(UnitXP, "nop", "nop") then
 		-- 与目标近战距离
 		---@diagnostic disable-next-line
 		if UnitXP("distanceBetween", "player", "target", "meleeAutoAttack") > 0 then
