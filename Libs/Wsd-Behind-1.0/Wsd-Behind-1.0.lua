@@ -1,6 +1,6 @@
 --[[
 Name: Wsd-Behind-1.0
-Revision: $Rev: 10001 $
+Revision: $Rev: 10002 $
 Author(s): 树先生 (xhwsd@qq.com)
 Website: https://github.com/xhwsd
 Description: 检验是否在背后相关库。
@@ -10,7 +10,7 @@ Dependencies: AceLibrary, AceDebug-2.0, AceEvent-2.0, SpellStatus-1.0, SpecialEv
 -- 主要版本
 local MAJOR_VERSION = "Wsd-Behind-1.0"
 -- 次要版本
-local MINOR_VERSION = "$Revision: 10001 $"
+local MINOR_VERSION = "$Revision: 10002 $"
 
 -- 检验AceLibrary
 if not AceLibrary then
