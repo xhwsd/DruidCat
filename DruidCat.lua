@@ -85,9 +85,9 @@ function DruidCat:OnInitialize()
 			-- 狂暴
 			berserk = {
 				-- 有扫击时
-				hasRake = true,
+				hasRake = false,
 				-- 有撕扯时
-				hasRip = true,
+				hasRip = false,
 				-- 是斩杀时
 				isKill = true,
 				-- 是BOSS时
