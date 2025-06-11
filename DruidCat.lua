@@ -413,14 +413,14 @@ function DruidCat:SpellStatus_SpellCastInstant(id, name, rank, fullName)
 	self:LevelDebug(3, "施法瞬间；法术名称：%", name)
 
 	-- 记录撕扯时间
-	if name == "撕扯" then
-		self.ripTimer = GetTime()
-	end
+	--if name == "撕扯" then
+		--self.ripTimer = GetTime()
+	--end
 
 	-- 记录猛虎之怒时间
-	if name == "猛虎之怒" then
-		self.tigerFuryTimer = GetTime()
-	end
+	--if name == "猛虎之怒" then
+		--self.tigerFuryTimer = GetTime()
+	--end
 end
 
 -- 施法失败
@@ -458,6 +458,8 @@ function DruidCat:Tear()
 			then
 				-- 补猛虎
 				CastSpellByName("猛虎之怒")
+				-- 记录猛虎时间
+				self.tigerFuryTimer = GetTime()
 			else
 				-- 流血
 				CastSpellByName("突袭")
@@ -599,6 +601,8 @@ function DruidCat:Tear()
 				then
 					-- 补猛虎
 					CastSpellByName("猛虎之怒")
+					-- 记录猛虎时间
+					self.tigerFuryTimer = GetTime()
 				end
 
 				if
@@ -629,6 +633,8 @@ function DruidCat:Tear()
 				then
 					-- 补撕扯
 					CastSpellByName("撕扯")
+					-- 记录撕扯时间
+					self.ripTimer = GetTime()
 				elseif
 					-- 有3星以上
 					GetComboPoints("target") > 3
