@@ -64,5 +64,3 @@
 - [乌龟服猫德的持续探索](https://luntan.turtle-wow.org/viewtopic.php?t=222) 
 
 
-## 鸣谢
-- `Crazydru#4246`
