@@ -25,18 +25,18 @@ local SpellStatus = AceLibrary("SpellStatus-1.0")
 -- 移动
 local Movement = AceLibrary("SpecialEvents-Movement-2.0")
 
----@type Wsd-Behind-1.0
-local Behind = AceLibrary("Wsd-Behind-1.0")
----@type Wsd-Bleed-1.0
-local Bleed = AceLibrary("Wsd-Bleed-1.0")
----@type Wsd-Buff-1.0
-local Buff = AceLibrary("Wsd-Buff-1.0")
----@type Wsd-Health-1.0
-local Health = AceLibrary("Wsd-Health-1.0")
----@type Wsd-Prompt-1.0
-local Prompt = AceLibrary("Wsd-Prompt-1.0")
----@type Wsd-Spell-1.0
-local Spell = AceLibrary("Wsd-Spell-1.0")
+---@type KuBa-Behind-1.0
+local Behind = AceLibrary("KuBa-Behind-1.0")
+---@type KuBa-Bleed-1.0
+local Bleed = AceLibrary("KuBa-Bleed-1.0")
+---@type KuBa-Buff-1.0
+local Buff = AceLibrary("KuBa-Buff-1.0")
+---@type KuBa-Health-1.0
+local Health = AceLibrary("KuBa-Health-1.0")
+---@type KuBa-Prompt-1.0
+local Prompt = AceLibrary("KuBa-Prompt-1.0")
+---@type KuBa-Spell-1.0
+local Spell = AceLibrary("KuBa-Spell-1.0")
 
 -- 插件载入
 function DruidCat:OnInitialize()

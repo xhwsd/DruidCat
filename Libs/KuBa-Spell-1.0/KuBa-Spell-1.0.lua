@@ -1,14 +1,14 @@
 --[[
-Name: Wsd-Spell-1.0
+Name: KuBa-Spell-1.0
 Revision: $Rev: 10007 $
 Author(s): 树先生 (xhwsd@qq.com)
-Website: https://github.com/xhwsd
+Website: https://gitee.com/ku-ba
 Description: 法术相关操作库。
 Dependencies: AceLibrary, SpellCache-1.0
 ]]
 
 -- 主要版本
-local MAJOR_VERSION = "Wsd-Spell-1.0"
+local MAJOR_VERSION = "KuBa-Spell-1.0"
 -- 次要版本
 local MINOR_VERSION = "$Revision: 10007 $"
 
@@ -47,7 +47,7 @@ local DURATION_PATTERNS = {
 local SpellCache = AceLibrary("SpellCache-1.0")
 
 -- 法术相关操作库。
----@class Wsd-Spell-1.0
+---@class KuBa-Spell-1.0
 local Library = {}
 
 -- 库激活

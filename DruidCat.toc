@@ -8,12 +8,12 @@
 ## OptionalDeps: AceLibrary, AceConsole-2.0, AceDebug-2.0, FuBarPlugin-2.0, Tablet-2.0
 ## SavedVariablesPerCharacter: DruidCatDB
 
-Libs\Wsd-Behind-1.0\Wsd-Behind-1.0.lua
-Libs\Wsd-Bleed-1.0\Wsd-Bleed-1.0.lua
-Libs\Wsd-Buff-1.0\Wsd-Buff-1.0.lua
-Libs\Wsd-Health-1.0\Wsd-Health-1.0.lua
-Libs\Wsd-Prompt-1.0\Wsd-Prompt-1.0.lua
-Libs\Wsd-Spell-1.0\Wsd-Spell-1.0.lua
+Libs\KuBa-Behind-1.0\KuBa-Behind-1.0.lua
+Libs\KuBa-Bleed-1.0\KuBa-Bleed-1.0.lua
+Libs\KuBa-Buff-1.0\KuBa-Buff-1.0.lua
+Libs\KuBa-Health-1.0\KuBa-Health-1.0.lua
+Libs\KuBa-Prompt-1.0\KuBa-Prompt-1.0.lua
+Libs\KuBa-Spell-1.0\KuBa-Spell-1.0.lua
 
 DruidCat.lua
 Helper.lua

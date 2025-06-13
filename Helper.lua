@@ -19,8 +19,8 @@ local Helper = {}
 
 -- 德鲁伊法力库
 local DruidManaLib = AceLibrary("DruidManaLib-1.0")
----@type Wsd-Buff-1.0
-local Buff = AceLibrary("Wsd-Buff-1.0")
+---@type KuBa-Buff-1.0
+local Buff = AceLibrary("KuBa-Buff-1.0")
 
 -- 切换形态；非指定形态取消，无形态转为形态
 ---@param index number 形态索引；可选值：1.熊、2.豚、3.猫、4.鹿

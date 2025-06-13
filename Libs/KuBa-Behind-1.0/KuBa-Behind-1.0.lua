@@ -1,14 +1,14 @@
 --[[
-Name: Wsd-Behind-1.0
+Name: KuBa-Behind-1.0
 Revision: $Rev: 10002 $
 Author(s): 树先生 (xhwsd@qq.com)
-Website: https://github.com/xhwsd
+Website: https://gitee.com/ku-ba
 Description: 检验是否在背后相关库。
 Dependencies: AceLibrary, AceDebug-2.0, AceEvent-2.0, SpellStatus-1.0, SpecialEvents-Movement-2.0
 ]]
 
 -- 主要版本
-local MAJOR_VERSION = "Wsd-Behind-1.0"
+local MAJOR_VERSION = "KuBa-Behind-1.0"
 -- 次要版本
 local MINOR_VERSION = "$Revision: 10002 $"
 
@@ -70,7 +70,7 @@ local BOOS_SECONDS = 10
 local OTHER_SECONDS = 3
 
 -- 检验猫德是否在背后相关库。
----@class Wsd-Behind-1.0
+---@class KuBa-Behind-1.0
 local Library = {}
 
 -- 库激活

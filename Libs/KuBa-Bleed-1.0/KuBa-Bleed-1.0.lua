@@ -1,14 +1,14 @@
 --[[
-Name: Wsd-Bleed-1.0
+Name: KuBa-Bleed-1.0
 Revision: $Rev: 10001 $
 Author(s): 树先生 (xhwsd@qq.com)
-Website: https://github.com/xhwsd
+Website: https://gitee.com/ku-ba
 Description: 检验可否流血相关库。
 Dependencies: AceLibrary
 ]]
 
 -- 主要版本
-local MAJOR_VERSION = "Wsd-Bleed-1.0"
+local MAJOR_VERSION = "KuBa-Bleed-1.0"
 -- 次要版本
 local MINOR_VERSION = "$Revision: 10001 $"
 
@@ -102,7 +102,7 @@ local BLACKLIST = {
 }
 
 -- 检验可否流血相关库。
----@class Wsd-Bleed-1.0
+---@class KuBa-Bleed-1.0
 local Library = {}
 
 -- 库激活
