@@ -1,9 +1,5 @@
 # 猫德辅助插件
 
-> __自娱自乐，不做任何保证！__  
-> 如遇到BUG可反馈至 xhwsd@qq.com 邮箱
-
-
 ## 使用
 - 安装`!Libs`插件
 - [可选][[文档](https://github.com/xhwsd/SuperMacro/)][[下载](https://github.com/xhwsd/SuperMacro/archive/master.zip)]安装`SuperMacro`插件，安装后将获得更多宏位
