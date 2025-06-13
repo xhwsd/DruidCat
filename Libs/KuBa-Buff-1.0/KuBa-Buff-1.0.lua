@@ -86,7 +86,7 @@ function Library:FindUnit(name, unit)
 		local id, texture = GetInventorySlotInfo("MainHandSlot")
 		KuBaBuffTooltip:ClearLines()
 		KuBaBuffTooltip:SetInventoryItem("player", id);
-		for index = 1, WsdBuffTooltip:NumLines() do
+		for index = 1, KuBaBuffTooltip:NumLines() do
 			local text = getglobal("KuBaBuffTooltipTextLeft" .. index):GetText() or ""
 			if string.find(text, name) then
 				return "mainhand", index, text, texture
