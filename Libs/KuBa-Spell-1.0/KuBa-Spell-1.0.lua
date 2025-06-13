@@ -80,7 +80,7 @@ end
 --------------------------------
 
 -- 提示帧
-local WsdSpellTooltip = CreateFrame("GameTooltip", "WsdSpellTooltip", UIParent, "GameTooltipTemplate")
+local KuBaSpellTooltip = CreateFrame("GameTooltip", "KuBaSpellTooltip", UIParent, "GameTooltipTemplate")
 
 -- 法术名称到索引
 ---@param name string 法术名称
@@ -156,13 +156,13 @@ function Library:ParseDuration(index, patterns)
 	end
 
 	-- 取法术描述
-	WsdSpellTooltip:SetOwner(WsdSpellTooltip, "ANCHOR_NONE")
-	WsdSpellTooltip:ClearLines()
-	WsdSpellTooltip:SetSpell(index, BOOKTYPE_SPELL)
-	local numLines = WsdSpellTooltip:NumLines()
+	KuBaSpellTooltip:SetOwner(KuBaSpellTooltip, "ANCHOR_NONE")
+	KuBaSpellTooltip:ClearLines()
+	KuBaSpellTooltip:SetSpell(index, BOOKTYPE_SPELL)
+	local numLines = KuBaSpellTooltip:NumLines()
 	if numLines and numLines > 0 then
 		-- 获取最后一行
-		local text = getglobal("WsdSpellTooltipTextLeft" .. numLines):GetText()
+		local text = getglobal("KuBaSpellTooltipTextLeft" .. numLines):GetText()
 		if text then
 			-- 法术描述样本
 			-- 腐蚀术：腐蚀目标，在18.69秒内造成累计828到834点伤害。
