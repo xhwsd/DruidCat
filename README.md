@@ -1,4 +1,6 @@
 # 猫德辅助插件
+> 如有建议或BUG请至[ku-ba/DruidCat](https://gitee.com/ku-ba/DruidCat)代码库[提交问题](https://gitee.com/ku-ba/DruidCat/issues)！
+
 
 ## 使用
 - 安装`!Libs`插件
