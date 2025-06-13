@@ -1,6 +1,6 @@
 --[[
 Name: KuBa-Spell-1.0
-Revision: $Rev: 10007 $
+Revision: $Rev: 10008 $
 Author(s): 树先生 (xhwsd@qq.com)
 Website: https://gitee.com/ku-ba
 Description: 法术相关操作库。
@@ -10,7 +10,7 @@ Dependencies: AceLibrary, SpellCache-1.0
 -- 主要版本
 local MAJOR_VERSION = "KuBa-Spell-1.0"
 -- 次要版本
-local MINOR_VERSION = "$Revision: 10007 $"
+local MINOR_VERSION = "$Revision: 10008 $"
 
 -- 检验AceLibrary
 if not AceLibrary then
