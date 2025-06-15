@@ -672,7 +672,7 @@ function DruidCat:Tear()
 				then
 					-- 背刺
 					CastSpellByName("撕碎")
-				elseif UnitMana("player") >= clawEnergy
+				elseif UnitMana("player") >= clawEnergy then
 					-- 消能量
 					CastSpellByName("爪击")
 				else
