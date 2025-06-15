@@ -473,13 +473,13 @@ function DruidCat:Tear()
 		if self.helper:IsCat() then
 			-- 猫形态
             --无目标切换目标
-            if not UnitExists("target") then
-                TargetLastEnemy()
-            end
-            --无目标或者目标死亡切换目标
-            if not UnitExists("target") or UnitIsDeadOrGhost("target") then
-                TargetNearestEnemy()
-            end
+			if UnitExists("target") then
+				if UnitIsDeadOrGhost("target") then
+					TargetNearestEnemy()
+				end
+			else
+				TargetLastEnemy()
+			end
 			-- 自动攻击
 			self.helper:AutoAttack()
 
@@ -493,6 +493,7 @@ function DruidCat:Tear()
 			-- 变形回能
 			local metamorphicRecovery = self.helper:GetMetamorphicRecovery()
 
+			
 			if
 				-- 无冷却时间（公共冷却）
 				Spell:IsReady("猎豹形态")
@@ -500,20 +501,20 @@ function DruidCat:Tear()
 					-- 能量不够爪击(减2秒呼吸回能20)
 					UnitMana("player") < clawEnergy - 20
 					or (
-						-- 能量不够扫击（变身10s以后，能量足够不考虑回能）
-						UnitMana("player") < rakeEnergy
-						-- 与上个猛虎已过去10秒以上
-						and GetTime() - self.tigerFuryTimer > 10
+					-- 能量不够扫击（变身10s以后，能量足够不考虑回能）
+					UnitMana("player") < rakeEnergy
+					-- 与上个猛虎已过去10秒以上
+					and GetTime() - self.tigerFuryTimer > 10
 					)
 					or (
-						-- 能量不够撕碎(减2秒呼吸回能20)
-						UnitMana("player") < shredEnergy - 20
-						-- 不可流血
-						and not canBleed
-						-- 在背后
-						and Behind:IsBehind()
-						-- 低于4连击点
-						and GetComboPoints("target") < 4
+					-- 能量不够撕碎(减2秒呼吸回能20)
+					UnitMana("player") < shredEnergy - 20
+					-- 不可流血
+					and not canBleed
+					-- 在背后
+					and Behind:IsBehind()
+					-- 低于4连击点
+					and GetComboPoints("target") < 4
 					)
 				)
 				-- 变形回能60及以上
@@ -525,8 +526,8 @@ function DruidCat:Tear()
 			then
 				-- 取消猫形态
 				CastSpellByName("猎豹形态")
-                -- 取消当前目标，避免人形普攻
-                ClearTarget()
+               	-- 取消当前目标，避免人形普攻
+               	ClearTarget()
 			else
 				-- 有扫击
 				local hasRake = self.helper:HasDebuff('扫击')
@@ -587,9 +588,7 @@ function DruidCat:Tear()
 				then
 					-- 回能
 					CastSpellByName("狂暴")
-				end
-
-				if
+				elseif
 					-- 无猛虎之怒
 					not Buff:FindUnit("猛虎之怒") 
 					-- 能量有变形回能及以上数
@@ -603,9 +602,7 @@ function DruidCat:Tear()
 					CastSpellByName("猛虎之怒")
 					-- 记录猛虎时间
 					self.tigerFuryTimer = GetTime()
-				end
-
-				if
+				elseif
 					-- 有节能施法
 					Buff:FindUnit("节能施法")
 					-- 在背后
@@ -621,9 +618,7 @@ function DruidCat:Tear()
 				then
 					-- 补精灵之火
 					CastSpellByName("精灵之火（野性）")
-				end
-	
-				if
+				elseif
 					-- 可流血
 					canBleed
 					-- 可撕扯
@@ -649,9 +644,7 @@ function DruidCat:Tear()
 				then
 					-- 消星
 					CastSpellByName("凶猛撕咬")
-				end
-
-				if
+				elseif
 					-- 可流血
 					canBleed
 					-- 可扫击
@@ -661,9 +654,7 @@ function DruidCat:Tear()
 				then
 					-- 补扫击
 					CastSpellByName("扫击")
-				end
-
-				if
+				elseif
 					(
 						-- 有强化攻击
 						Buff:FindUnit("强化攻击")
@@ -681,18 +672,15 @@ function DruidCat:Tear()
 				then
 					-- 背刺
 					CastSpellByName("撕碎")
-				else
+				elseif UnitMana("player") >= clawEnergy
 					-- 消能量
 					CastSpellByName("爪击")
-				end
-
-				-- 骗节能
-				if Spell:IsReady("精灵之火（野性）") then
+				else
 					CastSpellByName("精灵之火（野性）")
 				end
 			end
 		else
-			-- 变猫形态（变形回能量）
+			-- 变猫形态
 			self.helper:SwitchForm(3)
 		end
 	end
