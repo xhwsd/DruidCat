@@ -441,13 +441,13 @@ function DruidCat:Tear()
 	-- 可流血
 	local canBleed = Bleed:CanBleed()
 	-- 战斗中
-	local combat = UnitAffectingCombat("player")
+	--local combat = UnitAffectingCombat("player")
     -- 战斗中目标选择为近战，脱战为最远距离
-    if combat then
-	    SetCVar("targetNearestDistance", 5)
-    else
-	    SetCVar("targetNearestDistance", 41)
-    end
+    --if combat then
+	    --SetCVar("targetNearestDistance", 5)
+    --else
+	    --SetCVar("targetNearestDistance", 41)
+    --end
 
 	if Buff:FindUnit("潜行") then
 		-- 潜行中
